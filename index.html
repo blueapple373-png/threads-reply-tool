@@ -499,15 +499,7 @@ ${comments.map((c, i) => `${i + 1}. ${c}`).join('\n')}
     const text = data.choices[0].message.content;
     const clean = text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userPrompt }]
-      })
-    });
+  
 
     const data = await response.json();
     const text = data.content.map(i => i.text || '').join('');
