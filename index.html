@@ -35,7 +35,6 @@
     font-family: 'Noto Sans JP', sans-serif;
     font-weight: 300;
     min-height: 100vh;
-    padding: 0;
   }
 
   header {
@@ -59,7 +58,6 @@
     font-size: 11px;
     color: var(--text-muted);
     margin-top: 2px;
-    letter-spacing: 0.04em;
   }
 
   .main {
@@ -68,7 +66,6 @@
     padding: 24px 16px 60px;
   }
 
-  /* Input area */
   .input-section {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -86,28 +83,7 @@
     margin-bottom: 10px;
   }
 
-  .post-input {
-    width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
-    font-family: 'Noto Sans JP', sans-serif;
-    font-size: 14px;
-    font-weight: 300;
-    color: var(--text);
-    background: var(--bg);
-    resize: vertical;
-    min-height: 80px;
-    outline: none;
-    transition: border-color 0.2s;
-    margin-bottom: 14px;
-  }
-
-  .post-input:focus {
-    border-color: var(--accent);
-  }
-
-  .comments-input {
+  .post-input, .comments-input, .key-input {
     width: 100%;
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -117,13 +93,16 @@
     font-weight: 300;
     color: var(--text);
     background: var(--bg);
-    resize: vertical;
-    min-height: 140px;
     outline: none;
     transition: border-color 0.2s;
+    margin-bottom: 14px;
   }
 
-  .comments-input:focus {
+  .post-input { min-height: 80px; resize: vertical; }
+  .comments-input { min-height: 140px; resize: vertical; }
+  .key-input { font-size: 12px; }
+
+  .post-input:focus, .comments-input:focus, .key-input:focus {
     border-color: var(--accent);
   }
 
@@ -153,7 +132,6 @@
   .analyze-btn:hover { opacity: 0.85; }
   .analyze-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* Loading */
   .loading {
     text-align: center;
     padding: 40px 20px;
@@ -176,15 +154,7 @@
     40% { opacity: 1; }
   }
 
-  /* Results */
   .results { display: none; }
-
-  .results-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
 
   .results-title {
     font-family: 'Noto Serif JP', serif;
@@ -192,6 +162,7 @@
     font-weight: 400;
     color: var(--text-muted);
     letter-spacing: 0.06em;
+    margin-bottom: 16px;
   }
 
   .filter-tabs {
@@ -219,23 +190,16 @@
     color: white;
   }
 
-  /* Comment card */
   .comment-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 12px;
     padding: 18px 20px;
     margin-bottom: 12px;
-    transition: border-color 0.2s;
   }
 
-  .comment-card.needs-attention {
-    border-left: 3px solid var(--tag-deep-text);
-  }
-
-  .comment-card.auto-ok {
-    border-left: 3px solid var(--green);
-  }
+  .comment-card.needs-attention { border-left: 3px solid var(--tag-deep-text); }
+  .comment-card.auto-ok { border-left: 3px solid var(--green); }
 
   .card-top {
     display: flex;
@@ -316,7 +280,6 @@
     font-family: 'Noto Sans JP', sans-serif;
     cursor: pointer;
     transition: opacity 0.2s;
-    letter-spacing: 0.04em;
   }
 
   .btn-copy:hover { opacity: 0.8; }
@@ -330,10 +293,7 @@
     font-size: 12px;
     font-family: 'Noto Sans JP', sans-serif;
     cursor: pointer;
-    transition: opacity 0.2s;
   }
-
-  .btn-skip:hover { opacity: 0.7; }
 
   .done-badge {
     font-size: 11px;
@@ -346,11 +306,8 @@
 
   .skipped .comment-text,
   .skipped .reply-box,
-  .skipped .attention-notice {
-    opacity: 0.4;
-  }
+  .skipped .attention-notice { opacity: 0.4; }
 
-  /* Empty state */
   .empty {
     text-align: center;
     padding: 40px 20px;
@@ -370,6 +327,9 @@
 <div class="main">
 
   <div class="input-section">
+    <label>APIキー</label>
+    <input type="password" class="key-input" id="apiKey" placeholder="sk-proj-...">
+
     <label>元の投稿（任意）</label>
     <textarea class="post-input" id="postText" placeholder="例：愛着障害も調べた。自己否定も調べた。なのに苦しい。"></textarea>
 
@@ -393,16 +353,14 @@
   </div>
 
   <div class="results" id="results">
-    <div class="results-header">
-      <span class="results-title" id="resultsTitle"></span>
-    </div>
+    <div class="results-title" id="resultsTitle"></div>
 
-    <div class="filter-tabs" id="filterTabs">
-      <button class="filter-tab active" onclick="filterCards('all')">すべて</button>
-      <button class="filter-tab" onclick="filterCards('advice')">アドバイス型</button>
-      <button class="filter-tab" onclick="filterCards('empathy')">共感型</button>
-      <button class="filter-tab" onclick="filterCards('deep')">要対応</button>
-      <button class="filter-tab" onclick="filterCards('promo')">勧誘型</button>
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="filterCards('all', event)">すべて</button>
+      <button class="filter-tab" onclick="filterCards('advice', event)">アドバイス型</button>
+      <button class="filter-tab" onclick="filterCards('empathy', event)">共感型</button>
+      <button class="filter-tab" onclick="filterCards('deep', event)">要対応</button>
+      <button class="filter-tab" onclick="filterCards('promo', event)">勧誘型</button>
     </div>
 
     <div id="cardList"></div>
@@ -416,19 +374,15 @@ let allCards = [];
 let currentFilter = 'all';
 
 async function analyzeComments() {
+  const apiKey = document.getElementById('apiKey').value.trim();
   const postText = document.getElementById('postText').value.trim();
   const commentsText = document.getElementById('commentsText').value.trim();
 
-  if (!commentsText) {
-    alert('コメントを入力してください');
-    return;
-  }
+  if (!apiKey) { alert('APIキーを入力してください'); return; }
+  if (!commentsText) { alert('コメントを入力してください'); return; }
 
   const comments = commentsText.split('\n').map(c => c.trim()).filter(c => c.length > 0);
-  if (comments.length === 0) {
-    alert('コメントを入力してください');
-    return;
-  }
+  if (comments.length === 0) { alert('コメントを入力してください'); return; }
 
   document.getElementById('analyzeBtn').disabled = true;
   document.getElementById('loading').style.display = 'block';
@@ -455,39 +409,29 @@ MINAMI MINDLABについて：
 - promo：「話しませんか」「無料セッション」「無料シート」など勧誘・営業
 
 返信方針：
-- advice → 感謝しつつ、南美らしい短い返信案を生成（自動化OK）
-- empathy → 共鳴する短い返信案を生成（自動化OK）
-- deep → 返信案は生成しない。「南美さんが自分で返信してください」とだけ伝える
-- promo → 短いお礼だけの返信案を生成（または無視でもいいと伝える）
+- advice → 感謝しつつ、南美らしい短い返信案を生成
+- empathy → 共鳴する短い返信案を生成
+- deep → 返信案はnull。noteに「南美さんが直接返信してください」と記載
+- promo → 短いお礼の返信案を生成
 
-必ずJSON配列で返答してください。以下の形式で：
-[
-  {
-    "comment": "元のコメントテキスト",
-    "type": "advice" | "empathy" | "deep" | "promo",
-    "reply": "返信案のテキスト（deepの場合はnull）",
-    "note": "一言メモ（任意、deepの場合は理由）"
-  }
-]
-
-JSONのみ返答。説明文・マークダウン記法・バッククォートは不要。`;
+必ずJSON配列のみ返答。説明文・マークダウン・バッククォート不要。
+[{"comment":"...","type":"advice|empathy|deep|promo","reply":"...またはnull","note":"..."}]`;
 
   const userPrompt = `${postText ? `元の投稿：\n${postText}\n\n` : ''}コメント一覧：
 ${comments.map((c, i) => `${i + 1}. ${c}`).join('\n')}
 
-上記のコメントを分類して返信案を生成してください。`;
+上記を分類して返信案を生成してください。`;
 
   try {
-    try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer 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'
+        'Authorization': 'Bearer ' + apiKey
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
-        max_tokens: 1000,
+        max_tokens: 2000,
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -496,13 +440,13 @@ ${comments.map((c, i) => `${i + 1}. ${c}`).join('\n')}
     });
 
     const data = await response.json();
-    const text = data.choices[0].message.content;
-    const clean = text.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
-  
 
-    const data = await response.json();
-    const text = data.content.map(i => i.text || '').join('');
+    if (data.error) {
+      alert('APIエラー: ' + data.error.message);
+      return;
+    }
+
+    const text = data.choices[0].message.content;
     const clean = text.replace(/```json|```/g, '').trim();
     const parsed = JSON.parse(clean);
 
@@ -511,7 +455,7 @@ ${comments.map((c, i) => `${i + 1}. ${c}`).join('\n')}
 
   } catch (err) {
     console.error(err);
-    alert('エラーが発生しました。もう一度試してください。');
+    alert('エラーが発生しました: ' + err.message);
   } finally {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('analyzeBtn').disabled = false;
@@ -524,74 +468,56 @@ function renderCards(cards) {
   const title = document.getElementById('resultsTitle');
 
   list.innerHTML = '';
-
   const filtered = currentFilter === 'all' ? cards : cards.filter(c => c.type === currentFilter);
+  title.textContent = cards.length + '件のコメント';
 
-  title.textContent = `${cards.length}件のコメント`;
-
-  if (filtered.length === 0) {
-    document.getElementById('emptyState').style.display = 'block';
-  } else {
-    document.getElementById('emptyState').style.display = 'none';
-  }
+  document.getElementById('emptyState').style.display = filtered.length === 0 ? 'block' : 'none';
 
   filtered.forEach((item, idx) => {
     const card = document.createElement('div');
-    card.className = `comment-card ${item.type === 'deep' ? 'needs-attention' : 'auto-ok'}`;
-    card.id = `card-${idx}`;
+    card.className = 'comment-card ' + (item.type === 'deep' ? 'needs-attention' : 'auto-ok');
+    card.id = 'card-' + idx;
 
     const tagLabel = { advice: 'アドバイス型', empathy: '共感型', deep: '要対応', promo: '勧誘型' }[item.type] || item.type;
-    const tagClass = `tag-${item.type}`;
 
     let actionHTML = '';
     if (item.type === 'deep') {
-      actionHTML = `
-        <div class="attention-notice">
-          <span>🌿</span>
-          <span>このコメントは南美さんが直接返信してください。重い体験を話してくれています。</span>
-        </div>`;
+      actionHTML = '<div class="attention-notice"><span>🌿</span><span>このコメントは南美さんが直接返信してください。</span></div>';
     } else {
-      actionHTML = `
-        <div class="action-label">返信案</div>
-        <div class="reply-box" id="reply-${idx}">${escapeHtml(item.reply || '')}</div>
-        <div class="card-actions">
-          <button class="btn-copy" onclick="copyReply(${idx})">コピーする</button>
-          <button class="btn-skip" onclick="skipCard(${idx})">スキップ</button>
-        </div>
-        <div class="done-badge" id="done-${idx}">✓ コピーしました</div>`;
+      actionHTML = '<div class="action-label">返信案</div>' +
+        '<div class="reply-box" id="reply-' + idx + '">' + escapeHtml(item.reply || '') + '</div>' +
+        '<div class="card-actions">' +
+        '<button class="btn-copy" onclick="copyReply(' + idx + ')">コピーする</button>' +
+        '<button class="btn-skip" onclick="skipCard(' + idx + ')">スキップ</button>' +
+        '</div>' +
+        '<div class="done-badge" id="done-' + idx + '">✓ コピーしました</div>';
     }
 
-    card.innerHTML = `
-      <div class="card-top">
-        <span class="tag ${tagClass}">${tagLabel}</span>
-        <div class="comment-text">${escapeHtml(item.comment)}</div>
-      </div>
-      ${actionHTML}`;
-
+    card.innerHTML = '<div class="card-top"><span class="tag tag-' + item.type + '">' + tagLabel + '</span><div class="comment-text">' + escapeHtml(item.comment) + '</div></div>' + actionHTML;
     list.appendChild(card);
   });
 
   results.style.display = 'block';
 }
 
-function filterCards(type) {
+function filterCards(type, e) {
   currentFilter = type;
   document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+  e.target.classList.add('active');
   renderCards(allCards);
 }
 
 function copyReply(idx) {
-  const replyEl = document.getElementById(`reply-${idx}`);
-  if (!replyEl) return;
-  navigator.clipboard.writeText(replyEl.textContent).then(() => {
-    const done = document.getElementById(`done-${idx}`);
+  const el = document.getElementById('reply-' + idx);
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    const done = document.getElementById('done-' + idx);
     if (done) { done.style.display = 'flex'; setTimeout(() => done.style.display = 'none', 2000); }
   });
 }
 
 function skipCard(idx) {
-  const card = document.getElementById(`card-${idx}`);
+  const card = document.getElementById('card-' + idx);
   if (card) card.classList.toggle('skipped');
 }
 
